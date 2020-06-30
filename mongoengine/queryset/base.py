@@ -1664,6 +1664,9 @@ class BaseQuerySet:
 
             cursor_args[fields_name]["_text_score"] = {"$meta": "textScore"}
 
+        if self._as_pymongo and '_cls' not in self.only_fields:
+            cursor_args[fields_name].pop('_cls', None)
+
         return cursor_args
 
     @property
