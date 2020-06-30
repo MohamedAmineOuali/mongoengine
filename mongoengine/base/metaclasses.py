@@ -141,6 +141,9 @@ class DocumentMetaclass(type):
             superclasses += (document_bases[0]._class_name,)
 
         _cls = ".".join(reversed(class_name))
+        if 'namespace' in attrs['_meta']:
+            _cls = attrs['_meta']['namespace'] + "." + name
+
         attrs["_class_name"] = _cls
         attrs["_superclasses"] = superclasses
         attrs["_subclasses"] = (_cls,)
@@ -299,14 +302,14 @@ class TopLevelDocumentMetaclass(DocumentMetaclass):
 
         # Prevent classes setting collection different to their parents
         # If parent wasn't an abstract class
-        if (
-            parent_doc_cls
-            and "collection" in attrs.get("_meta", {})
-            and not parent_doc_cls._meta.get("abstract", True)
-        ):
-            msg = "Trying to set a collection on a subclass (%s)" % name
-            warnings.warn(msg, SyntaxWarning)
-            del attrs["_meta"]["collection"]
+        # if (
+        #     parent_doc_cls
+        #     and "collection" in attrs.get("_meta", {})
+        #     and not parent_doc_cls._meta.get("abstract", True)
+        # ):
+        #     msg = "Trying to set a collection on a subclass (%s)" % name
+        #     warnings.warn(msg, SyntaxWarning)
+        #     del attrs["_meta"]["collection"]
 
         # Ensure abstract documents have abstract bases
         if attrs.get("_is_base_cls") or attrs["_meta"].get("abstract"):
