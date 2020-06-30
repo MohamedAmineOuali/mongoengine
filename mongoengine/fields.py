@@ -884,6 +884,9 @@ class DynamicField(BaseField):
                 value = doc_cls._get_db().dereference(value["_ref"])
             return doc_cls._from_son(value)
 
+        if isinstance(value, list):
+            return [self.to_python(v) for v in value]
+
         return super().to_python(value)
 
     def lookup_member(self, member_name):
