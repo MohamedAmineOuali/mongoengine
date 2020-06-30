@@ -852,12 +852,15 @@ class DynamicField(BaseField):
 
         if hasattr(value, "to_mongo"):
             cls = value.__class__
-            val = value.to_mongo(use_db_field, fields)
+            val = None
             # If we its a document thats not inherited add _cls
             if isinstance(value, Document):
                 val = {"_ref": value.to_dbref(), "_cls": cls.__name__}
-            if isinstance(value, EmbeddedDocument):
+            elif isinstance(value, EmbeddedDocument):
+                val = value.to_mongo(use_db_field, fields)
                 val["_cls"] = cls.__name__
+            else:
+                val = value.to_mongo(use_db_field, fields)
             return val
 
         if not isinstance(value, (dict, list, tuple)):
