@@ -327,6 +327,11 @@ def update(_doc_cls=None, **update):
             elif op == "inc":
                 value = field.prepare_query_value(op, value)
 
+            FileField = _import_class("FileField")
+            if isinstance(field, FileField):
+                value = field.to_mongo(value)
+
+
         if match:
             match = "$" + match
             value = {match: value}
