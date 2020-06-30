@@ -865,17 +865,9 @@ class DynamicField(BaseField):
 
         is_list = False
         if not hasattr(value, "items"):
-            is_list = True
-            value = {k: v for k, v in enumerate(value)}
+            return [self.to_mongo(v, use_db_field, fields) for v in value]
 
-        data = {}
-        for k, v in value.items():
-            data[k] = self.to_mongo(v, use_db_field, fields)
-
-        value = data
-        if is_list:  # Convert back to a list
-            value = [v for k, v in sorted(data.items(), key=itemgetter(0))]
-        return value
+        return {key: self.to_mongo(v, use_db_field, fields) for (key, v) in value.items()}
 
     def to_python(self, value):
         if isinstance(value, dict) and "_cls" in value:
