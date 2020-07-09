@@ -406,5 +406,5 @@ def connect(db=None, alias=DEFAULT_CONNECTION_NAME, **kwargs):
 
 
 # Support old naming convention
-_get_connection = get_connection
-_get_db = get_db
+# _get_connection = get_connection
+# _get_db = get_db
