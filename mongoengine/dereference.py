@@ -8,7 +8,7 @@ from mongoengine.base import (
     get_document,
 )
 from mongoengine.base.datastructures import LazyReference
-from mongoengine.connection import get_db
+from mongoengine import connection
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import DictField, ListField, MapField, ReferenceField
 from mongoengine.queryset import QuerySet
@@ -190,7 +190,7 @@ class DeReference:
                         doc = doc_type._from_son(ref)
                         object_map[(collection, doc.id)] = doc
                 else:
-                    references = get_db()[collection].find({"_id": {"$in": refs}})
+                    references = connection.get_db()[collection].find({"_id": {"$in": refs}})
                     for ref in references:
                         if "_cls" in ref:
                             doc = get_document(ref["_cls"])._from_son(ref)

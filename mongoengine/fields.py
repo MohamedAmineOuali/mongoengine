@@ -33,7 +33,7 @@ from mongoengine.base import (
 )
 from mongoengine.base.utils import LazyRegexCompiler
 from mongoengine.common import _import_class
-from mongoengine.connection import DEFAULT_CONNECTION_NAME, get_db
+from mongoengine import connection
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.errors import DoesNotExist, InvalidQueryError, ValidationError
 from mongoengine.mongodb_support import MONGODB_36, get_mongodb_version
@@ -1636,7 +1636,7 @@ class GridFSProxy:
         grid_id=None,
         key=None,
         instance=None,
-        db_alias=DEFAULT_CONNECTION_NAME,
+        db_alias=connection.DEFAULT_CONNECTION_NAME,
         collection_name="fs",
     ):
         self.grid_id = grid_id  # Store GridFS id for file
@@ -1708,7 +1708,7 @@ class GridFSProxy:
     @property
     def fs(self):
         if not self._fs:
-            self._fs = gridfs.GridFS(get_db(self.db_alias), self.collection_name)
+            self._fs = gridfs.GridFS(connection.get_db(self.db_alias), self.collection_name)
         return self._fs
 
     def get(self, grid_id=None):
@@ -1799,7 +1799,7 @@ class FileField(BaseField):
     proxy_class = GridFSProxy
 
     def __init__(
-        self, db_alias=DEFAULT_CONNECTION_NAME, collection_name="fs", **kwargs
+        self, db_alias=connection.DEFAULT_CONNECTION_NAME, collection_name="fs", **kwargs
     ):
         super().__init__(**kwargs)
         self.collection_name = collection_name
@@ -2082,7 +2082,7 @@ class SequenceField(BaseField):
         **kwargs
     ):
         self.collection_name = collection_name or self.COLLECTION_NAME
-        self.db_alias = db_alias or DEFAULT_CONNECTION_NAME
+        self.db_alias = db_alias or connection.DEFAULT_CONNECTION_NAME
         self.sequence_name = sequence_name
         self.value_decorator = (
             value_decorator if callable(value_decorator) else self.VALUE_DECORATOR
@@ -2095,7 +2095,7 @@ class SequenceField(BaseField):
         """
         sequence_name = self.get_sequence_name()
         sequence_id = "{}.{}".format(sequence_name, self.name)
-        collection = get_db(alias=self.db_alias)[self.collection_name]
+        collection = connection.get_db(alias=self.db_alias)[self.collection_name]
 
         counter = collection.find_one_and_update(
             filter={"_id": sequence_id},
@@ -2109,7 +2109,7 @@ class SequenceField(BaseField):
         """Helper method to set the next sequence value"""
         sequence_name = self.get_sequence_name()
         sequence_id = "{}.{}".format(sequence_name, self.name)
-        collection = get_db(alias=self.db_alias)[self.collection_name]
+        collection = connection.get_db(alias=self.db_alias)[self.collection_name]
         counter = collection.find_one_and_update(
             filter={"_id": sequence_id},
             update={"$set": {"next": value}},
@@ -2126,7 +2126,7 @@ class SequenceField(BaseField):
         """
         sequence_name = self.get_sequence_name()
         sequence_id = "{}.{}".format(sequence_name, self.name)
-        collection = get_db(alias=self.db_alias)[self.collection_name]
+        collection = connection.get_db(alias=self.db_alias)[self.collection_name]
         data = collection.find_one({"_id": sequence_id})
 
         if data:
