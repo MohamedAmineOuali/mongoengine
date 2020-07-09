@@ -4,7 +4,7 @@ from pymongo.read_concern import ReadConcern
 from pymongo.write_concern import WriteConcern
 
 from mongoengine.common import _import_class
-from mongoengine.connection import DEFAULT_CONNECTION_NAME, get_db
+from mongoengine import connection
 from mongoengine.pymongo_support import count_documents
 
 __all__ = (
@@ -45,7 +45,7 @@ class switch_db:
         self.cls = cls
         self.collection = cls._get_collection()
         self.db_alias = db_alias
-        self.ori_db_alias = cls._meta.get("db_alias", DEFAULT_CONNECTION_NAME)
+        self.ori_db_alias = cls._meta.get("db_alias", connection.DEFAULT_CONNECTION_NAME)
 
     def __enter__(self):
         """Change the db_alias and clear the cached collection."""
@@ -183,10 +183,10 @@ class query_counter:
     - Some queries are ignored by default by the counter (killcursors, db.system.indexes)
     """
 
-    def __init__(self, alias=DEFAULT_CONNECTION_NAME):
+    def __init__(self, alias=connection.DEFAULT_CONNECTION_NAME):
         """Construct the query_counter
         """
-        self.db = get_db(alias=alias)
+        self.db = connection.get_db(alias=alias)
         self.initial_profiling_level = None
         self._ctx_query_counter = 0  # number of queries issued by the context
 

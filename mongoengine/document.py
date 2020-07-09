@@ -16,7 +16,7 @@ from mongoengine.base import (
     get_document,
 )
 from mongoengine.common import _import_class
-from mongoengine.connection import DEFAULT_CONNECTION_NAME, get_db
+from mongoengine import connection
 from mongoengine.context_managers import set_write_concern, switch_collection, switch_db
 from mongoengine.errors import (
     InvalidDocumentError,
@@ -182,7 +182,7 @@ class Document(BaseDocument, metaclass=TopLevelDocumentMetaclass):
     @classmethod
     def _get_db(cls):
         """Some Model using other db_alias"""
-        return get_db(cls._meta.get("db_alias", DEFAULT_CONNECTION_NAME))
+        return connection.get_db(cls._meta.get("db_alias", connection.DEFAULT_CONNECTION_NAME))
 
     @classmethod
     def _disconnect(cls):

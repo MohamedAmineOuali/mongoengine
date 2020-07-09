@@ -16,7 +16,7 @@ from pymongo.read_concern import ReadConcern
 from mongoengine import signals
 from mongoengine.base import get_document
 from mongoengine.common import _import_class
-from mongoengine.connection import get_db
+from mongoengine import connection
 from mongoengine.context_managers import (
     set_read_write_concern,
     set_write_concern,
@@ -481,7 +481,7 @@ class BaseQuerySet:
             if rule == CASCADE:
                 cascade_refs = set() if cascade_refs is None else cascade_refs
                 # Handle recursive reference
-                if doc._collection == document_cls._collection:
+                if doc._get_collection() == document_cls._get_collection():
                     for ref in queryset:
                         cascade_refs.add(ref.id)
                 refs = document_cls.objects(
@@ -1441,7 +1441,7 @@ class BaseQuerySet:
                 remaing_args = ["db", "sharded", "nonAtomic"]
 
                 if db_alias:
-                    ordered_output.append(("db", get_db(db_alias).name))
+                    ordered_output.append(("db", connection.get_db(db_alias).name))
                     del remaing_args[0]
 
                 for part in remaing_args:
